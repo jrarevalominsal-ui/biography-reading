@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pronunciation Practice: Nick Vujicic</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --correct-bg: #dcfce7;
+      --correct-text: #166534;
+      --wrong-bg: #fee2e2;
+      --wrong-text: #991b1b;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .browser-warning {
+      display: none;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 10px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .score-badge {
+      background: #e2e8f0;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .reading-box {
+      font-size: 1.2rem;
+      line-height: 2;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .word {
+      display: inline-block;
+      padding: 0 4px;
+      margin: 0 1px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .word.correct {
+      background-color: var(--correct-bg);
+      color: var(--correct-text);
+      font-weight: 600;
+    }
+
+    .word.wrong {
+      background-color: var(--wrong-bg);
+      color: var(--wrong-text);
+      text-decoration: underline wavy #dc2626;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-record {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-record:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-record.recording {
+      background-color: #dc2626;
+      animation: pulse 1.5s infinite;
+    }
+
+    .btn-listen {
+      background-color: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-listen:hover {
+      background-color: #cbd5e1;
+    }
+
+    .btn-reset {
+      background-color: transparent;
+      color: var(--muted);
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-reset:hover {
+      background-color: #f1f5f9;
+    }
+
+    .transcript-box {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+      min-height: 22px;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Reading & Pronunciation Practice</h1>
+    <p>Click <strong>"Start Reading"</strong> and read each part aloud. Mispronounced or skipped words will be highlighted in red.</p>
+  </header>
+
+  <div id="browserWarning" class="browser-warning">
+    ⚠️ Your browser does not support Speech Recognition. Please open this page in <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong>.
+  </div>
+
+  <div id="sectionsContainer"></div>
+</div>
+
+<script>
+  const sections = [
+    {
+      title: "Part 1: Introduction",
+      text: "Nicholas James Vujicic, better known as Nick Vujicic, is an Australian-American motivational speaker, Christian preacher, and best-selling author. He is famous around the world as a symbol of resilience and hope."
+    },
+    {
+      title: "Part 2: Early Life and Education",
+      text: "Nick was born on December 4, 1982, in Melbourne, Australia. He was born with tetra-amelia syndrome, a rare condition characterized by the absence of arms and legs. Growing up, he faced severe bullying and depression. However, with the support of his family, he became one of the first disabled students integrated into regular Australian schools. At age 17, he started giving talks at his prayer group, and at 21, he graduated from Griffith University with a double major in Accounting and Financial Planning."
+    },
+    {
+      title: "Part 3: Career and Achievements",
+      text: "Today, Nick travels globally to give speeches about overcoming obstacles, anti-bullying, and finding purpose in life. In 2005, he founded Life Without Limbs, a non-profit organization dedicated to helping people with physical disabilities. He has also written several international bestsellers, including Life Without Limits and Unstoppable. Additionally, he starred in the award-winning short film The Butterfly Circus, winning Best Actor at the Method Fest Independent Film Festival."
+    },
+    {
+      title: "Part 4: Personal Life and Residence",
+      text: "In February 2012, Nick married Kanae Miyahara. Together, they have four children: two boys, Kiyoshi and Dejan, and twin girls, Olivia and Ellie. Although he grew up in Australia, he moved to the United States to expand his career. Today, he lives in the United States, primarily in Southern California and Florida, with his family."
+    }
+  ];
+
+  // Number-to-word mapping to prevent speech recognition mismatch on numbers
+  const numberMap = {
+    "4": "fourth", "17": "seventeen", "21": "twenty one",
+    "1982": "nineteen eighty two", "2005": "two thousand five", "2012": "two thousand twelve"
+  };
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let activeRecognition = null;
+  let activeIndex = null;
+
+  if (!SpeechRecognition) {
+    document.getElementById("browserWarning").style.display = "block";
+  }
+
+  const container = document.getElementById("sectionsContainer");
+
+  // Render Cards
+  sections.forEach((sec, index) => {
+    const words = sec.text.split(" ");
+    const wordSpans = words.map((w, wIdx) => `<span class="word" id="word-${index}-${wIdx}">${w}</span>`).join(" ");
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="card-title">${sec.title}</span>
+        <span class="score-badge" id="score-${index}">Accuracy: --%</span>
+      </div>
+      <div class="reading-box" id="text-${index}">${wordSpans}</div>
+      <div class="controls">
+        <button class="btn-record" id="btn-rec-${index}" onclick="toggleRecording(${index})">
+          🎤 Start Reading
+        </button>
+        <button class="btn-listen" onclick="speakText(${index})">
+          🔊 Listen to Model
+        </button>
+        <button class="btn-reset" onclick="resetSection(${index})">
+          ↺ Reset
+        </button>
+      </div>
+      <div class="transcript-box" id="transcript-${index}">Your spoken words will appear here...</div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Clean word for accurate comparison
+  function cleanWord(str) {
+    let cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return numberMap[cleaned] ? numberMap[cleaned] : cleaned;
+  }
+
+  // Text-to-Speech Model Audio
+  function speakText(index) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(sections[index].text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.92; // Slightly slower for intermediate learners
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Reset Section
+  function resetSection(index) {
+    if (activeIndex === index && activeRecognition) {
+      activeRecognition.stop();
+    }
+    const words = sections[index].text.split(" ");
+    words.forEach((_, wIdx) => {
+      const el = document.getElementById(`word-${index}-${wIdx}`);
+      el.classList.remove("correct", "wrong");
+    });
+    document.getElementById(`score-${index}`).innerText = "Accuracy: --%";
+    document.getElementById(`transcript-${index}`).innerText = "Your spoken words will appear here...";
+  }
+
+  // Start / Stop Speech Recognition
+  function toggleRecording(index) {
+    if (!SpeechRecognition) return;
+
+    // Stop if already recording this section
+    if (activeIndex === index && activeRecognition) {
+      activeRecognition.stop();
+      return;
+    }
+
+    // Stop any other active recording
+    if (activeRecognition) {
+      activeRecognition.stop();
+    }
+
+    resetSection(index);
+    activeIndex = index;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    activeRecognition = recognition;
+
+    const btn = document.getElementById(`btn-rec-${index}`);
+    btn.classList.add("recording");
+    btn.innerHTML = "⏹ Stop & Check";
+
+    let finalTranscript = "";
+
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript + " ";
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      const combined = (finalTranscript + interimTranscript).trim();
+      document.getElementById(`transcript-${index}`).innerText = `Heard: "${combined}"`;
+      evaluatePronunciation(index, combined, false);
+    };
+
+    recognition.onend = () => {
+      btn.classList.remove("recording");
+      btn.innerHTML = "🎤 Start Reading";
+      const currentText = document.getElementById(`transcript-${index}`).innerText.replace(/^Heard:\s*"|"$/g, "");
+      if (currentText && currentText !== "Your spoken words will appear here...") {
+        evaluatePronunciation(index, currentText, true);
+      }
+      activeRecognition = null;
+      activeIndex = null;
+    };
+
+    recognition.onerror = (event) => {
+      document.getElementById(`transcript-${index}`).innerText = `Error: ${event.error}. Please check microphone permissions.`;
+      btn.classList.remove("recording");
+      btn.innerHTML = "🎤 Start Reading";
+    };
+
+    recognition.start();
+  }
+
+  // Compare spoken words against target paragraph
+  function evaluatePronunciation(index, spokenText, isFinal) {
+    const targetWords = sections[index].text.split(" ");
+    const spokenWords = spokenText
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .split(/\s+/)
+      .filter(Boolean);
+
+    // Flatten expanded numbers in spoken words
+    let normalizedSpoken = [];
+    spokenWords.forEach(w => {
+      if (numberMap[w]) {
+        normalizedSpoken.push(...numberMap[w].split(" "));
+      } else {
+        normalizedSpoken.push(w);
+      }
+    });
+
+    let spokenPointer = 0;
+    let correctCount = 0;
+
+    targetWords.forEach((rawTarget, wIdx) => {
+      const el = document.getElementById(`word-${index}-${wIdx}`);
+      const targetClean = cleanWord(rawTarget);
+      const targetParts = targetClean.split(" ");
+
+      // Look ahead within a small window (4 words) to handle skipped/extra words gracefully
+      let foundAt = -1;
+      const searchWindow = Math.min(spokenPointer + 5, normalizedSpoken.length);
+
+      for (let i = spokenPointer; i < searchWindow; i++) {
+        if (normalizedSpoken[i] === targetParts[0]) {
+          foundAt = i;
+          break;
+        }
+      }
+
+      if (foundAt !== -1) {
+        el.classList.remove("wrong");
+        el.classList.add("correct");
+        spokenPointer = foundAt + targetParts.length;
+        correctCount++;
+      } else if (isFinal) {
+        el.classList.remove("correct");
+        el.classList.add("wrong");
+      }
+    });
+
+    if (isFinal) {
+      const percentage = Math.round((correctCount / targetWords.length) * 100);
+      document.getElementById(`score-${index}`).innerText = `Accuracy: ${percentage}%`;
+    }
+  }
+</script>
+
+</body>
+</html>
