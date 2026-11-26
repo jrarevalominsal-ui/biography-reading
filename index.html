@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nick Vujicic: Reading, Quiz & Pronunciation Lab</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --correct-bg: #dcfce7;
+      --correct-text: #166534;
+      --wrong-bg: #fee2e2;
+      --wrong-text: #991b1b;
+      --accent: #7c3aed;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 840px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      margin: 0 0 8px 0;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .browser-warning {
+      display: none;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .section-divider {
+      margin: 35px 0 20px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #cbd5e1;
+      color: var(--text);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 10px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .score-badge {
+      background: #e2e8f0;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .reading-box {
+      font-size: 1.15rem;
+      line-height: 2;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .word {
+      display: inline-block;
+      padding: 0 4px;
+      margin: 0 1px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .word.correct {
+      background-color: var(--correct-bg);
+      color: var(--correct-text);
+      font-weight: 600;
+    }
+
+    .word.wrong {
+      background-color: var(--wrong-bg);
+      color: var(--wrong-text);
+      text-decoration: underline wavy #dc2626;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-record {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-record:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-record.recording {
+      background-color: #dc2626;
+      animation: pulse 1.5s infinite;
+    }
+
+    .btn-listen {
+      background-color: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-listen:hover {
+      background-color: #cbd5e1;
+    }
+
+    .btn-reset {
+      background-color: transparent;
+      color: var(--muted);
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-reset:hover {
+      background-color: #f1f5f9;
+    }
+
+    .btn-submit {
+      background-color: #16a34a;
+      color: white;
+      font-size: 1.08rem;
+      padding: 14px 28px;
+      width: 100%;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background-color: #15803d;
+    }
+
+    .transcript-box {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+      min-height: 22px;
+    }
+
+    /* Quiz Styles */
+    .question-block {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .question-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question-text {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      display: block;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .option-label:hover {
+      background-color: #f1f5f9;
+    }
+
+    .option-label input {
+      margin-right: 10px;
+    }
+
+    .option-label.correct-ans {
+      background-color: var(--correct-bg);
+      border-color: #16a34a;
+      color: var(--correct-text);
+      font-weight: 600;
+    }
+
+    .option-label.wrong-ans {
+      background-color: var(--wrong-bg);
+      border-color: #dc2626;
+      color: var(--wrong-text);
+    }
+
+    /* Results & Post-Test Word List */
+    #resultsCard {
+      display: none;
+      border: 2px solid var(--primary);
+      background: #ffffff;
+    }
+
+    .score-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .score-box {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .score-box.highlight {
+      background: #eff6ff;
+      border-color: var(--primary);
+    }
+
+    .score-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .score-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .practice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .practice-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      transition: all 0.25s ease;
+    }
+
+    .practice-row.mastered {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    .practice-word-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .target-word-label {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--wrong-text);
+    }
+
+    .practice-row.mastered .target-word-label {
+      color: var(--correct-text);
+    }
+
+    .status-pill {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .practice-row.mastered .status-pill {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .heard-mini {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+  
+    .sentence { border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:14px; background:#f8fafc; }
+    .sentence.active { border-color:#dc2626; box-shadow:0 0 0 2px #fecaca; }
+    .sentence-text { font-size:1.2rem; line-height:2; margin-bottom:10px; }
+    .word { cursor:pointer; }
+    .word:hover { outline:1px solid #93c5fd; }
+    .word.near { background:#fef3c7; color:#92400e; font-weight:600; }
+    .word.missed { background:#e2e8f0; color:#475569; text-decoration:underline dashed #64748b; }
+    .word.name { color:#6d28d9; border-bottom:2px dotted #a78bfa; border-radius:0; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .mic-status { font-weight:700; margin-top:8px; min-height:22px; }
+    .mic-status.live { color:#dc2626; }
+    .feedback { margin-top:8px; }
+    summary { cursor:pointer; }
+    .tip-item { background:#fff; border:1px solid #e2e8f0; border-left:4px solid #dc2626; border-radius:8px; padding:8px 12px; margin-top:8px; font-size:.95rem; }
+    .tip-item.near { border-left-color:#d97706; }
+    .tip-item.missed { border-left-color:#64748b; }
+    .tip-item.info { border-left-color:#2563eb; }
+    .say { color:var(--accent); font-weight:700; }
+    .legend { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; font-size:.88rem; }
+    .legend .word { cursor:default; }
+    .howto { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:.95rem; }
+    .howto ul { margin:6px 0 0; padding-left:20px; }
+    .practice-row .details { flex-basis:100%; font-size:.95rem; }
+    .practice-row.near { background:#fffbeb; border-color:#fde68a; }
+    .practice-row.missed { background:#f8fafc; border-color:#cbd5e1; }
+    .practice-row.mastered { background:#f0fdf4; border-color:#86efac; }
+    .explain { background:#eff6ff; border-radius:8px; padding:10px 14px; font-size:.95rem; margin-top:6px; }
+    .quiz-warning { color:#b45309; font-weight:600; min-height:20px; }
+    @media (max-width:520px){ body{padding:16px} .card{padding:16px} }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Nick Vujicic: Reading, Quiz &amp; Pronunciation</h1>
+    <p><strong>Paso 1:</strong> Lee cada sección en voz alta. <strong>Paso 2:</strong> Responde las 5 preguntas. <strong>Paso 3:</strong> Entrega el test y practica tus palabras.</p>
+  </header>
+
+  <div id="browserWarning" class="browser-warning" role="alert"></div>
+
+  <div class="howto">
+    <strong>🎧 Para que el micrófono te entienda mejor:</strong>
+    <ul>
+      <li>Primero pulsa <strong>Escuchar</strong> (normal o lento).</li>
+      <li>Pulsa <strong>Leer</strong> y <strong>espera</strong> a ver “🔴 Habla ahora”.</li>
+      <li>Lee con voz clara, sin correr, cerca del micrófono y en un lugar silencioso.</li>
+      <li>Lee la sección completa y al final pulsa <strong>Terminar</strong>. Puedes repetirla las veces que quieras.</li>
+      <li>Toca cualquier palabra para oírla y ver cómo se pronuncia.</li>
+    </ul>
+  </div>
+
+  <div class="section-divider">Parte 1: Lectura en voz alta y pronunciación</div>
+  <div class="legend">
+    <span class="word correct">Bien</span>
+    <span class="word near">Casi</span>
+    <span class="word wrong">Se oyó otra palabra</span>
+    <span class="word missed">No se escuchó</span>
+    <span class="word name">Nombre o término especial (no califica)</span>
+  </div>
+  <div class="tip-item info" id="wordInfo" hidden></div>
+  <div id="sectionsContainer"></div>
+
+  <div class="section-divider">Parte 2: Comprensión lectora (5 preguntas)</div>
+  <div class="card">
+    <div id="quizContainer"></div>
+    <div class="quiz-warning" id="quizWarning" role="status"></div>
+    <button class="btn-submit" id="submitBtn">✅ Entregar test y obtener evaluación</button>
+  </div>
+
+  <div class="card" id="resultsCard">
+    <div class="card-header"><span class="card-title" style="font-size:1.3rem">📊 Resultado final y lista de práctica</span></div>
+    <div class="score-summary">
+      <div class="score-box"><div class="score-label">Pronunciación</div><div class="score-number" id="finalPronScore">--%</div></div>
+      <div class="score-box"><div class="score-label">Comprensión</div><div class="score-number" id="finalCompScore">--%</div></div>
+      <div class="score-box highlight"><div class="score-label">Calificación final</div><div class="score-number" id="finalTotalScore">--%</div></div>
+    </div>
+    <p id="generalFeedback" style="font-size:1.05rem;font-weight:500"></p>
+    <div id="soundSummary"></div>
+    <h3>📝 Palabras para mejorar</h3>
+    <p style="font-size:.92rem;color:var(--muted)">Pulsa <strong>Escuchar</strong>, lee la explicación y luego pulsa <strong>Repetir</strong>. La práctica no cambia la calificación.</p>
+    <div class="practice-list" id="practiceWordList"></div>
+    <p><button class="btn-reset" id="restartBtn">↺ Empezar todo de nuevo</button></p>
+  </div>
+</div>
+
+<script>
+// ====== CONTENIDO (el profesor puede editarlo) ======
+// Cada sección se lee completa, como un párrafo. (Las líneas separadas solo sirven para el botón "En la oración".)
+const sections = [
+  { title: "Sección 1: Introducción", sentences: [
+    "Nicholas James Vujicic, better known as Nick Vujicic,",
+    "is an Australian-American motivational speaker, Christian preacher, and best-selling author.",
+    "He is famous around the world as a symbol of resilience and hope."
+  ]},
+  { title: "Sección 2: Primeros años y educación", sentences: [
+    "Nick was born on December 4, 1982, in Melbourne, Australia.",
+    "He was born with tetra-amelia syndrome, a rare condition characterized by the absence of arms and legs.",
+    "Growing up, he faced severe bullying and depression.",
+    "However, with the support of his family,",
+    "he became one of the first disabled students integrated into regular Australian schools.",
+    "At age 17, he started giving talks at his prayer group,",
+    "and at 21, he graduated from Griffith University with a double major in Accounting and Financial Planning."
+  ]},
+  { title: "Sección 3: Carrera y logros", sentences: [
+    "Today, Nick travels globally to give speeches about overcoming obstacles, anti-bullying, and finding purpose in life.",
+    "In 2005, he founded Life Without Limbs,",
+    "a non-profit organization dedicated to helping people with physical disabilities.",
+    "He has also written several international bestsellers, including Life Without Limits and Unstoppable.",
+    "Additionally, he starred in the award-winning short film The Butterfly Circus,",
+    "winning Best Actor at the Method Fest Independent Film Festival."
+  ]},
+  { title: "Sección 4: Vida personal y residencia", sentences: [
+    "In February 2012, Nick married Kanae Miyahara.",
+    "Together, they have four children: two boys, Kiyoshi and Dejan,",
+    "and twin girls, Olivia and Ellie.",
+    "Although he grew up in Australia, he moved to the United States to expand his career.",
+    "Today, he lives in the United States,",
+    "primarily in Southern California and Florida, with his family."
+  ]}
+];
+
+const quizQuestions = [
+  { question: "1. What rare medical condition was Nick Vujicic born with?",
+    options: ["A) Tetra-amelia syndrome", "B) Chronic muscular dystrophy", "C) Congenital blindness"], answer: 0, section: 2,
+    quote: "He was born with tetra-amelia syndrome, a rare condition characterized by the absence of arms and legs.",
+    why: "<b>Born with</b> significa “nació con”. Es una condición <b>rare</b> (poco común): no tiene brazos (<b>arms</b>) ni piernas (<b>legs</b>)." },
+  { question: "2. What did Nick study at Griffith University?",
+    options: ["A) Psychology and Education", "B) Accounting and Financial Planning", "C) Communications and Public Speaking"], answer: 1, section: 2,
+    quote: "He graduated from Griffith University with a double major in Accounting and Financial Planning.",
+    why: "<b>Double major</b> significa que estudió dos especialidades: <b>Accounting</b> (contabilidad) y <b>Financial Planning</b> (planificación financiera). Él da discursos, pero no es lo que estudió." },
+  { question: "3. What is 'Life Without Limbs'?",
+    options: ["A) His first Hollywood movie", "B) A non-profit organization he founded in 2005", "C) A school for disabled students in Australia"], answer: 1, section: 3,
+    quote: "In 2005, he founded Life Without Limbs, a non-profit organization...",
+    why: "<b>Founded</b> significa “fundó”. <b>Non-profit organization</b> es una organización sin fines de lucro." },
+  { question: "4. For which short film did Nick win a Best Actor award?",
+    options: ["A) Unstoppable", "B) Life Without Limits", "C) The Butterfly Circus"], answer: 2, section: 3,
+    quote: "He starred in the award-winning short film The Butterfly Circus, winning Best Actor...",
+    why: "<b>Short film</b> es un cortometraje. <i>Unstoppable</i> y <i>Life Without Limits</i> son <b>libros</b> que él escribió, no películas." },
+  { question: "5. Where does Nick Vujicic primarily live today?",
+    options: ["A) Melbourne, Australia", "B) Southern California and Florida, USA", "C) Tokyo, Japan"], answer: 1, section: 4,
+    quote: "Today, he lives in the United States, primarily in Southern California and Florida.",
+    why: "<b>Today</b> (hoy) y <b>primarily</b> (principalmente) son las pistas. Nació en Melbourne, pero se mudó (<b>moved</b>) a Estados Unidos." }
+];
+
+// Nombres propios y términos que el micrófono casi nunca reconoce: se muestran, pero no califican.
+const UNGRADED = new Set(["vujicic","kanae","miyahara","kiyoshi","dejan","olivia","ellie","griffith","tetraamelia"]);
+
+// Guía por palabra: "pronunciación aproximada|significado". La sílaba en MAYÚSCULAS lleva más fuerza.
+const GUIDE = {
+nicholas:"NÍ-ko-las|Nicolás",james:"yéims|James (nombre)",vujicic:"VÚI-chich|apellido",better:"BÉ-ter|mejor",known:"nóun (la k no suena)|conocido",as:"az|como",nick:"nik|Nick (nombre)",is:"iz|es",an:"an|un, una",australian:"os-TRÉI-lian|australiano",american:"a-MÉ-ri-kan|estadounidense",motivational:"mou-ti-VÉI-sho-nal|motivacional",speaker:"SPÍ-ker|orador",christian:"KRÍS-chan|cristiano",preacher:"PRÍ-cher|predicador",and:"and|y",best:"best|mejor",selling:"SÉ-ling|de ventas",author:"Ó-zer|autor",he:"jii|él",famous:"FÉI-mas|famoso",around:"a-RÁUND|alrededor de",the:"da / di|el, la",world:"wérld|mundo",a:"a|un, una",symbol:"SÍM-bol|símbolo",of:"ov|de",resilience:"ri-ZÍ-liens|resiliencia",hope:"jóup|esperanza",
+was:"woz|era, fue",born:"born|nacido",on:"on|en (fechas)",december:"di-SÉM-ber|diciembre",fourth:"forz|cuatro (de fecha)",nineteen:"nain-TÍIN|diecinueve",eighty:"ÉI-ti|ochenta",two:"tuu (la w no suena)|dos",in:"in|en",melbourne:"MÉL-bern|Melbourne (ciudad)",australia:"os-TRÉI-lia|Australia",with:"wiz|con",tetra:"TÉ-tra|tetra",amelia:"a-MÍ-lia|amelia",syndrome:"SÍN-droum|síndrome",rare:"rer|poco común",condition:"kon-DÍ-shon|condición",characterized:"KÁ-rak-ter-aizd|caracterizada",by:"bai|por",absence:"ÁB-sens|ausencia",arms:"armz|brazos",legs:"legz|piernas",growing:"GRÓU-ing|creciendo",up:"ap|arriba (grow up: crecer)",faced:"féist (una sola sílaba)|enfrentó",severe:"si-VÍR|grave, severo",bullying:"BÚ-li-ing|acoso escolar",depression:"di-PRÉ-shon|depresión",however:"jau-É-ver|sin embargo",support:"sa-PÓRT|apoyo",his:"jiz|su (de él)",family:"FÁ-mi-li|familia",became:"bi-KÉIM|llegó a ser",one:"uán|uno",first:"ferst|primero",disabled:"dis-ÉI-bold|con discapacidad",students:"STÚ-dents|estudiantes",integrated:"ÍN-te-grei-tid|integrados",into:"ÍN-tu|en, dentro de",regular:"RÉ-guiu-lar|regulares",schools:"skuulz|escuelas",at:"at|a, en",age:"éich|edad",seventeen:"se-ven-TÍIN|diecisiete",started:"STÁR-tid|comenzó",giving:"GUÍ-ving|dando",talks:"toks (la l no suena)|charlas",prayer:"prer|oración",group:"gruup|grupo",twenty:"TUÉN-ti|veinte",graduated:"GRÁ-yu-ei-tid|se graduó",from:"from|de, desde",university:"iu-ni-VÉR-si-ti|universidad",double:"DÁ-bol|doble",major:"MÉI-yer|especialidad",accounting:"a-KÁUN-ting|contabilidad",financial:"fai-NÁN-shal|financiera",planning:"PLÁ-ning|planificación",
+today:"tu-DÉI|hoy",travels:"TRÁ-velz|viaja",globally:"GLÓU-ba-li|por todo el mundo",to:"tu|a, para",give:"guiv|dar",speeches:"SPÍ-chiz|discursos",about:"a-BÁUT|sobre",overcoming:"ou-ver-KÁ-ming|superar",obstacles:"ÓB-sta-kolz|obstáculos",anti:"ÁN-ti|anti, contra",finding:"FÁIN-ding|encontrar",purpose:"PÉR-pos|propósito",life:"laif|vida",thousand:"ZÁU-zand|mil",five:"faiv|cinco",founded:"FÁUN-did|fundó",without:"wi-DÁUT|sin",limbs:"limz (la b no suena)|extremidades",non:"non|no, sin",profit:"PRÓ-fit|ganancia",organization:"or-ga-ni-ZÉI-shon|organización",dedicated:"DÉ-di-kei-tid|dedicada",helping:"JÉL-ping|ayudar",people:"PÍ-pol|personas",physical:"FÍ-zi-kal|físicas",disabilities:"dis-a-BÍ-li-tiz|discapacidades",has:"jaz|ha",also:"ÓL-sou|también",written:"RÍ-ten (la w no suena)|escrito",several:"SÉ-vral|varios",international:"in-ter-NÁ-sho-nal|internacionales",bestsellers:"best-SÉ-lerz|libros más vendidos",including:"in-KLÚ-ding|incluyendo",limits:"LÍ-mits|límites",unstoppable:"an-STÓ-pa-bol|imparable",additionally:"a-DÍ-sho-na-li|además",starred:"stard (una sola sílaba)|actuó como protagonista",award:"a-WÓRD|premio",winning:"WÍ-ning|ganador, ganando",short:"short|corto",film:"film|película",butterfly:"BÁ-ter-flai|mariposa",circus:"SÉR-kas|circo",actor:"ÁK-ter|actor",method:"MÉ-zod|método",fest:"fest|festival",independent:"in-di-PÉN-dent|independiente",festival:"FÉS-ti-val|festival",
+february:"FÉ-biu-e-ri|febrero",twelve:"tuelv|doce",married:"MÁ-rid (dos sílabas)|se casó con",together:"tu-GUÉ-der|juntos",they:"déi|ellos",have:"jav|tienen",four:"for|cuatro",children:"CHÍL-dren|hijos",boys:"boiz|niños",twin:"tuin|gemelas",girls:"guerlz|niñas",although:"ol-DÓU|aunque",grew:"gruu|creció",moved:"muuvd (una sola sílaba)|se mudó",united:"iu-NÁI-tid|Unidos",states:"stéits|Estados",expand:"ik-SPÁND|ampliar",career:"ka-RÍR|carrera profesional",lives:"livz|vive",primarily:"prai-MÉ-ri-li|principalmente",southern:"SÁ-dern|del sur",california:"ka-li-FÓR-nia|California",florida:"FLÓ-ri-da|Florida"
+};
+
+// ====== NÚMEROS Y NORMALIZACIÓN ======
+const ONES = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const TENS = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+const ORDINALS = { "1st":"first","2nd":"second","3rd":"third","4th":"fourth" };
+function numberToWords(n) {
+  if (n < 20) return [ONES[n]];
+  if (n < 100) return n % 10 ? [TENS[Math.floor(n/10)], ONES[n%10]] : [TENS[n/10]];
+  if (n >= 1900 && n < 2000) return ["nineteen", ...(n % 100 ? numberToWords(n % 100) : ["hundred"])];
+  if (n >= 2000 && n < 2100) return ["two","thousand", ...(n % 100 ? numberToWords(n % 100) : [])];
+  return [String(n)];
+}
+function tokenize(text) {
+  return text.toLowerCase().replace(/[’']/g,"").replace(/(\d),(\d{3})/g,"$1$2")
+    .split(/[^a-z0-9]+/).filter(Boolean)
+    .flatMap(t => ORDINALS[t] ? [ORDINALS[t]] : /^\d+$/.test(t) ? numberToWords(Number(t)) : [t]);
+}
+// Palabras que suenan igual (el micrófono puede escribir cualquiera de las dos).
+const SAME_SOUND = [["to","two","too"],["four","for","fourth","forth"],["one","won"],["by","buy","bye"],["born","borne"],["in","inn"],["an","ann"],["nick","nic","nik"]];
+function sameWord(target, heard) {
+  if (target === heard) return true;
+  return SAME_SOUND.some(g => g.includes(target) && g.includes(heard));
+}
+function editDistance(a, b) {
+  let prev = Array.from({length: b.length+1}, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function isClose(t, h) {
+  if (t.length >= 3 && (h === t+"s" || t === h+"s" || h+"ed" === t || h+"d" === t || t+"d" === h || t+"ed" === h)) return true;
+  return t.length >= 4 && editDistance(t, h) <= (t.length >= 8 ? 2 : 1);
+}
+
+// ====== COMPARACIÓN: alinea TODO lo dicho con TODO el texto ======
+// Así, una palabra perdida no hace que las siguientes se marquen mal.
+function align(target, spoken) {
+  const n = target.length, m = spoken.length;
+  const best = Array.from({length:n+1}, () => new Array(m+1).fill(0));
+  const move = Array.from({length:n+1}, () => new Array(m+1).fill(null));
+  for (let i = 0; i <= n; i++) for (let j = 0; j <= m; j++) {
+    if (!i && !j) continue;
+    let score = -Infinity, how = null;
+    const take = (s, h) => { if (s > score) { score = s; how = h; } };
+    if (i && j) {
+      const t = target[i-1], h = spoken[j-1];
+      if (sameWord(t,h)) take(best[i-1][j-1] + 10, [1,1,"ok"]);
+      else if (isClose(t,h)) take(best[i-1][j-1] + 4, [1,1,"near"]);
+      else take(best[i-1][j-1] + 1, [1,1,"wrong"]);
+    }
+    if (i && j >= 2 && target[i-1] === spoken[j-2] + spoken[j-1]) take(best[i-1][j-2] + 10, [1,2,"ok"]);
+    if (i >= 2 && j && target[i-2] + target[i-1] === spoken[j-1]) take(best[i-2][j-1] + 20, [2,1,"ok"]);
+    if (i) take(best[i-1][j], [1,0,"missed"]);
+    if (j) take(best[i][j-1], [0,1,null]);
+    best[i][j] = score; move[i][j] = how;
+  }
+  const out = new Array(n);
+  for (let i = n, j = m; i || j; ) {
+    const [di, dj, status] = move[i][j];
+    for (let k = 1; k <= di; k++) out[i-k] = { status, heard: spoken.slice(j-dj, j).join(" ") };
+    i -= di; j -= dj;
+  }
+  return out;
+}
+const cleanDisplay = w => w.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, "");
+function parseSentence(text) {
+  return text.split(" ").map(raw => {
+    const display = cleanDisplay(raw);
+    const key = display.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return { raw, display, parts: tokenize(display), graded: !UNGRADED.has(key) };
+  });
+}
+// transcripts[0] = lo que el micrófono considera más probable; los demás son alternativas.
+function evaluate(words, transcripts) {
+  const flat = words.flatMap(w => w.parts);
+  const runs = transcripts.map(t => align(flat, tokenize(t)));
+  let pos = 0;
+  return words.map(w => {
+    const idx = w.parts.map(() => pos++);
+    const main = idx.map(i => runs[0][i]);
+    if (main.every(r => r.status === "ok")) return { status:"ok", heard:"" };
+    const heard = [...new Set(main.filter(r => r.status !== "ok").map(r => r.heard).filter(Boolean))].join(" ");
+    if (runs.slice(1).some(run => idx.every(i => run[i].status === "ok"))) return { status:"near", heard };
+    if (main.every(r => r.status === "missed")) return { status:"missed", heard:"" };
+    if (main.every(r => r.status === "ok" || r.status === "near")) return { status:"near", heard };
+    return { status: heard ? "wrong" : "missed", heard };
+  });
+}
+
+// ====== EXPLICACIONES ======
+function soundTips(word) {
+  const w = word.toLowerCase(), tips = [];
+  const add = (id, text) => tips.push({ id, text });
+  if (/^(known|written|limbs|talks|two)$/.test(w)) add("mudas","Tiene una letra muda: no la pronuncies.");
+  if (/^s[ptkcmnl]/.test(w)) add("s inicial","Empieza directo con la “s” (sss…). No digas “es” antes.");
+  if (/ed$/.test(w) && w.length > 4) {
+    if (/[td]ed$/.test(w)) add("final -ed","Termina en -ed después de t/d: suena “id”, una sílaba extra.");
+    else if (/(p|k|f|s|c|ch|sh|x)ed$/.test(w)) add("final -ed","La -ed suena como “t”. No digas la “e”.");
+    else add("final -ed","La -ed suena como “d” suave. No digas la “e”.");
+  } else if (/[^s]s$/.test(w) && !["is","was","his","as","has"].includes(w)) add("final -s","Pronuncia la “s” del final.");
+  if (/th/.test(w)) add("th","Para “th”, pon la punta de la lengua entre los dientes y sopla suave.");
+  if (/tion|sion|cial/.test(w)) add("sh","Las letras “tion / sion / cial” suenan con “sh” (como al pedir silencio).");
+  if (/^h/.test(w)) add("h","La “h” suena como una “j” muy suave.");
+  if (/^w[^r]/.test(w) || w === "one") add("w","La “w” suena como “u” rápida, con los labios redondos.");
+  if (/v/.test(w)) add("v","Para la “v”, toca el labio de abajo con los dientes de arriba.");
+  if (/ing$/.test(w) && w.length > 4) add("-ing","Termina en “ing” suave, sin marcar una “g” fuerte.");
+  return tips;
+}
+function guideFor(word) {
+  const keys = tokenize(word);
+  const whole = word.toLowerCase().replace(/[^a-z0-9]/g,"");
+  const entries = GUIDE[whole] ? [GUIDE[whole]] : keys.map(k => GUIDE[k]).filter(Boolean);
+  return {
+    say: entries.map(e => e.split("|")[0]).join(" "),
+    meaning: /^\d+$/.test(whole) ? "número: " + keys.join(" ") : entries.map(e => e.split("|")[1]).join(" + "),
+    tips: soundTips(/^\d+$/.test(whole) ? keys.join(" ") : word)
+  };
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function explainHTML(word, status, heard) {
+  const g = guideFor(word);
+  let why = "";
+  if (status === "wrong") why = `El micrófono oyó <b>“${esc(heard)}”</b>.`;
+  if (status === "near") why = heard ? `Casi: se oyó <b>“${esc(heard)}”</b>. Revisa los sonidos, sobre todo el final.` : "Casi: no se oyó con total claridad.";
+  if (status === "missed") why = "No se escuchó. Dila completa, con más volumen y sin correr.";
+  return `${why ? why + "<br>" : ""}${g.say ? `🗣️ Suena parecido a: <span class="say">${esc(g.say)}</span><br>` : ""}${g.meaning ? `📖 Significa: ${esc(g.meaning)}` : ""}${g.tips.map(t => `<br>💡 ${t.text}`).join("")}`;
+}
+
+// ====== VOZ: ESCUCHAR ======
+function speakText(text, rate = 0.85) {
+  if (!window.speechSynthesis) return;
+  stopSession(true);
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = rate;
+  const voices = speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
+  const voice = voices.find(v => /Google|Natural/i.test(v.name)) || voices[0];
+  if (voice) u.voice = voice;
+  speechSynthesis.speak(u);
+}
+
+// ====== VOZ: GRABAR ======
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let session = null;
+const FATAL = {
+  "not-allowed":"El micrófono está bloqueado. Permítelo en el candado junto a la dirección de la página.",
+  "service-not-allowed":"Este navegador no permite el reconocimiento de voz. Usa Google Chrome.",
+  "audio-capture":"No se encontró un micrófono. Revisa que esté conectado.",
+  "network":"Sin conexión con el servicio de voz. Revisa tu internet.",
+  "language-not-supported":"Este navegador no reconoce inglés. Usa Google Chrome."
+};
+// El navegador corta la grabación en las pausas: aquí se reinicia sola hasta que el estudiante termine.
+function startSession({ silenceMs, maxMs, onState, onText, onDone }) {
+  stopSession(true);
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  const s = { saved: [], current: [], stopping: false, cancelled: false, finished: false, error: "", timers: {}, rec: null, quickEnds: 0 };
+  const segments = () => s.saved.concat(s.current);
+  const transcripts = () => [0,1,2,3,4].map(k => segments().map(a => a[k] ?? a[0]).join(" ").trim());
+  s.finish = () => {
+    if (s.finished) return;
+    s.finished = true;
+    Object.values(s.timers).forEach(clearTimeout);
+    if (s.rec) { s.rec.onresult = s.rec.onend = s.rec.onerror = s.rec.onstart = null; try { s.rec.abort(); } catch (e) {} }
+    if (session === s) session = null;
+    onDone(s.cancelled ? null : transcripts(), s.error);
+  };
+  s.stop = () => {
+    if (s.stopping) return;
+    s.stopping = true;
+    onState("processing");
+    try { s.rec.stop(); } catch (e) { s.finish(); return; }
+    s.timers.fallback = setTimeout(s.finish, 3000);
+  };
+  const listen = () => {
+    const rec = new SR();
+    s.rec = rec;
+    rec.lang = "en-US"; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 5;
+    let startedAt = Date.now();
+    rec.onstart = () => { startedAt = Date.now(); if (!s.stopping) onState("listening"); };
+    rec.onresult = e => {
+      s.current = Array.from(e.results, r => Array.from(r, alt => alt.transcript.trim()));
+      clearTimeout(s.timers.silence);
+      if (!s.stopping) s.timers.silence = setTimeout(s.stop, silenceMs);
+      onText(transcripts());
+    };
+    rec.onerror = e => { if (FATAL[e.error]) { s.error = FATAL[e.error]; s.stopping = true; } };
+    rec.onend = () => {
+      s.saved = segments(); s.current = [];
+      s.quickEnds = Date.now() - startedAt < 500 ? s.quickEnds + 1 : 0;
+      if (s.stopping || s.quickEnds > 3) return s.finish();
+      onState("starting");
+      s.timers.restart = setTimeout(() => { if (!s.finished && !s.stopping) listen(); else s.finish(); }, 150);
+    };
+    try { rec.start(); } catch (e) { s.error = "No se pudo iniciar el micrófono. Intenta otra vez."; s.finish(); }
+  };
+  session = s;
+  s.timers.max = setTimeout(s.stop, maxMs);
+  onState("starting");
+  listen();
+  return s;
+}
+function stopSession(cancel) {
+  if (!session) return;
+  if (cancel) { session.cancelled = true; session.finish(); } else session.stop();
+}
+const STATE_TEXT = { starting:"⏳ Preparando micrófono… espera", listening:"🔴 Habla ahora", processing:"⌛ Revisando…" };
+
+// ====== PARTE 1 ======
+const sentences = [];
+const $ = id => document.getElementById(id);
+function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+function button(cls, label, onClick) { const b = el("button", cls, label); b.type = "button"; b.addEventListener("click", onClick); return b; }
+
+sections.forEach((sec, sIdx) => {
+  const card = el("div","card", `<div class="card-header"><span class="card-title">${sec.title}</span><span class="score-badge" id="score-${sIdx}">Precisión: --%</span></div>`);
+  [sec.sentences.join(" ")].forEach(text => {
+    const item = { id: sIdx, section: sIdx, text, parts: sec.sentences, words: parseSentence(text), results: null };
+    sentences.push(item);
+    const box = el("div","sentence"), line = el("div","sentence-text");
+    item.spans = item.words.map(w => {
+      const span = el("span", "word" + (w.graded ? "" : " name"), esc(w.raw));
+      span.addEventListener("click", () => {
+        if (session) return;
+        speakText(w.display, 0.7);
+        const info = $("wordInfo-" + item.id);
+        const r = item.results && item.results[item.words.indexOf(w)];
+        info.hidden = false;
+        info.innerHTML = `<b>${esc(w.display)}</b><br>${explainHTML(w.display, w.graded && r ? r.status : "ok", r ? r.heard : "")}`;
+      });
+      line.append(span, " ");
+      return span;
+    });
+    const controls = el("div","controls");
+    item.btn = button("btn-record","🎤 Leer en voz alta", () => toggleSentence(item));
+    item.btn.id = "btn-rec-" + item.id;
+    item.btn.disabled = !SR;
+    controls.append(item.btn, button("btn-listen","🔊 Escuchar modelo", () => speakText(text, 0.9)), button("btn-listen","🐢 Lento", () => speakText(text, 0.6)), button("btn-reset","↺ Borrar", () => resetSentence(item)));
+    item.box = box;
+    item.status = el("div","mic-status"); item.status.setAttribute("role","status");
+    item.transcript = el("div","transcript-box"); item.transcript.id = "transcript-" + item.id;
+    item.feedback = el("div","feedback"); item.feedback.id = "feedback-" + item.id;
+    const info = el("div","tip-item info"); info.id = "wordInfo-" + item.id; info.hidden = true;
+    box.append(line, controls, item.status, item.transcript, info, item.feedback);
+    card.append(box);
+  });
+  $("sectionsContainer").append(card);
+});
+
+function paint(item, results, live) {
+  item.words.forEach((w, i) => {
+    const span = item.spans[i];
+    span.classList.remove("correct","near","wrong","missed");
+    if (!w.graded || !results) return;
+    const status = results[i].status;
+    if (status === "ok") span.classList.add("correct");
+    else if (!live) span.classList.add(status);
+  });
+}
+function updateSectionScore(sIdx) {
+  const list = sentences.filter(s => s.section === sIdx);
+  $("score-" + sIdx).innerText = list.some(s => s.results) ? `Precisión: ${percent(list)}%` : "Precisión: --%";
+}
+// Bien = 1 punto, Casi = medio punto. Las oraciones sin grabar cuentan 0.
+function percent(list) {
+  let points = 0, total = 0;
+  list.forEach(s => s.words.forEach((w, i) => {
+    if (!w.graded) return;
+    total++;
+    const st = s.results && s.results[i].status;
+    points += st === "ok" ? 1 : st === "near" ? 0.5 : 0;
+  }));
+  return Math.round(points / total * 100);
+}
+function resetSentence(item) {
+  if (session && session.itemId === item.id) stopSession(true);
+  item.results = null;
+  paint(item, null);
+  item.status.textContent = item.transcript.textContent = item.feedback.innerHTML = "";
+  $("wordInfo-" + item.id).hidden = true;
+  updateSectionScore(item.section);
+}
+function toggleSentence(item) {
+  if (!SR) return;
+  if (session && session.itemId === item.id) return stopSession(false);
+  stopSession(true);
+  item.transcript.textContent = "";
+  $("wordInfo-" + item.id).hidden = true;
+  const s = startSession({
+    silenceMs: 12000, maxMs: 240000,
+    onState: state => {
+      item.status.textContent = STATE_TEXT[state];
+      item.status.classList.toggle("live", state === "listening");
+    },
+    onText: t => {
+      item.transcript.textContent = `Escuchado: "${t[0]}"`;
+      const live = evaluate(item.words, t);
+      paint(item, live, true);
+      // Si ya se leyó todo el párrafo, termina solo.
+      if (live.every((r, i) => !item.words[i].graded || r.status === "ok")) {
+        clearTimeout(s.timers.silence);
+        s.timers.silence = setTimeout(s.stop, 1200);
+      }
+    },
+    onDone: (t, error) => {
+      item.btn.classList.remove("recording"); item.btn.innerHTML = "🎤 Leer en voz alta";
+      item.box.classList.remove("active"); item.status.classList.remove("live");
+      item.status.textContent = "";
+      if (!t || !t[0]) {
+        paint(item, item.results);
+        item.status.textContent = error || (t ? "No se escuchó nada. Acércate al micrófono e intenta otra vez." : "");
+        return;
+      }
+      item.results = evaluate(item.words, t);
+      item.transcript.textContent = `Escuchado: "${t[0]}"`;
+      if (error) item.status.textContent = error;
+      paint(item, item.results);
+      showSentenceFeedback(item);
+      updateSectionScore(item.section);
+    }
+  });
+  if (session !== s) return;
+  s.itemId = item.id;
+  item.box.classList.add("active");
+  item.btn.classList.add("recording"); item.btn.innerHTML = "⏹ Terminar";
+}
+function showSentenceFeedback(item) {
+  const bad = item.words.map((w, i) => ({ w, r: item.results[i] })).filter(x => x.w.graded && x.r.status !== "ok");
+  const graded = item.words.filter(w => w.graded).length;
+  if (!bad.length) { item.feedback.innerHTML = `<div class="tip-item info">🌟 ¡Excelente! Se entendieron todas las palabras.</div>`; return; }
+  const intro = bad.length > graded / 2 ? `<div class="tip-item info">Se entendió poco. Escucha en modo 🐢 <b>Lento</b> y vuelve a leer el párrafo.</div>` : `<p><b>${bad.length} palabra(s) para revisar.</b> Toca cada una para ver la explicación.</p>`;
+  const label = { wrong:"se oyó otra palabra", near:"casi", missed:"no se escuchó" };
+  item.feedback.innerHTML = intro + bad.map(({w, r}) => `<details class="tip-item ${r.status}"><summary><b>${esc(w.display)}</b> · ${label[r.status]}</summary>${explainHTML(w.display, r.status, r.heard)}</details>`).join("");
+}
+
+// ====== PARTE 2 ======
+quizQuestions.forEach((q, qIdx) => {
+  $("quizContainer").append(el("div","question-block", `<div class="question-text">${q.question}</div>` +
+    q.options.map((o, i) => `<label class="option-label" id="q${qIdx}-opt${i}"><input type="radio" name="question-${qIdx}" value="${i}">${o}</label>`).join("") +
+    `<div class="explain" id="explain-${qIdx}" hidden></div>`));
+});
+
+// ====== RESULTADOS ======
+let warnedUnanswered = false;
+let drillList = [];
+function calculateFinalResults() {
+  stopSession(false);
+  if (session) session.finish();
+  const chosen = quizQuestions.map((_, i) => document.querySelector(`input[name="question-${i}"]:checked`));
+  const unanswered = chosen.filter(c => !c).length;
+  if (unanswered && !warnedUnanswered) {
+    warnedUnanswered = true;
+    $("quizWarning").textContent = `Te faltan ${unanswered} pregunta(s). Respóndelas o pulsa “Entregar” otra vez.`;
+    return;
+  }
+  $("quizWarning").textContent = "";
+  let correct = 0;
+  quizQuestions.forEach((q, i) => {
+    const val = chosen[i] ? Number(chosen[i].value) : null;
+    q.options.forEach((_, j) => $(`q${i}-opt${j}`).classList.remove("correct-ans","wrong-ans"));
+    const ok = val === q.answer;
+    if (ok) correct++;
+    else if (val !== null) $(`q${i}-opt${val}`).classList.add("wrong-ans");
+    $(`q${i}-opt${q.answer}`).classList.add("correct-ans");
+    const box = $("explain-" + i);
+    box.hidden = false;
+    box.innerHTML = `<b>${ok ? "✅ ¡Correcto!" : val === null ? "⚪ Sin responder." : "❌ No es correcto."}</b> ${q.why}<br>📍 Sección ${q.section}: <i>“${q.quote}”</i>`;
+  });
+  document.querySelectorAll("#quizContainer input").forEach(r => r.disabled = true);
+  $("submitBtn").disabled = true;
+
+  const comp = Math.round(correct / quizQuestions.length * 100);
+  const pron = percent(sentences);
+  const final = Math.max(10, Math.min(100, Math.round(pron * 0.5 + comp * 0.5)));
+  $("finalPronScore").innerText = pron + "%";
+  $("finalCompScore").innerText = comp + "%";
+  $("finalTotalScore").innerText = final + "%";
+
+  const read = sentences.filter(s => s.results).length;
+  let msg = read < sentences.length ? `Grabaste ${read} de ${sentences.length} secciones (las que faltan cuentan como 0 en pronunciación). ` : "";
+  msg += final >= 85 ? "🌟 ¡Excelente trabajo! Tienes muy buena comprensión y pronunciación."
+       : final >= 65 ? "👍 ¡Buen trabajo! Practica las palabras de abajo para mejorar."
+       : "💪 ¡Sigue practicando! Escucha cada palabra despacio y repítela varias veces.";
+  $("generalFeedback").innerText = msg;
+
+  // Solo palabras que el estudiante grabó y no salieron bien (sin repetir).
+  const rank = { wrong:3, near:2, missed:1 };
+  const map = new Map();
+  sentences.filter(s => s.results).forEach(s => s.words.forEach((w, i) => {
+    const r = s.results[i];
+    if (!w.graded || r.status === "ok") return;
+    const key = w.display.toLowerCase(), old = map.get(key);
+    if (!old || rank[r.status] > rank[old.status]) map.set(key, { word: w.display, status: r.status, heard: r.heard, sentence: s.parts.find(p => parseSentence(p).some(x => x.display === w.display)) || s.text });
+  }));
+  drillList = [...map.values()].sort((a, b) => rank[b.status] - rank[a.status]);
+
+  const counts = {};
+  drillList.forEach(d => guideFor(d.word).tips.forEach(t => { (counts[t.id] ||= { text: t.text, words: [] }).words.push(d.word); }));
+  const top = Object.values(counts).filter(c => c.words.length >= 2).sort((a, b) => b.words.length - a.words.length).slice(0, 3);
+  $("soundSummary").innerHTML = top.length ? `<h3>🎯 Sonidos para practicar</h3>` + top.map(c => `<div class="tip-item info">${c.text}<br><b>Practica con:</b> ${c.words.slice(0,6).map(esc).join(", ")}</div>`).join("") : "";
+
+  const list = $("practiceWordList");
+  list.innerHTML = "";
+  if (!read) list.innerHTML = `<p style="color:#92400e;font-weight:600">⚠️ No grabaste ninguna sección, por eso no hay lista de palabras.</p>`;
+  else if (!drillList.length) list.innerHTML = `<p style="color:var(--correct-text);font-weight:700">🎉 ¡Felicidades! Todas las palabras que grabaste se entendieron bien.</p>`;
+  drillList.forEach((d, i) => {
+    const label = { wrong:"Se oyó otra palabra", near:"Casi", missed:"No se escuchó" }[d.status];
+    const row = el("div", "practice-row " + d.status, `<div class="practice-word-info"><span class="target-word-label">${esc(d.word)}</span><span class="status-pill">${label}</span><span class="heard-mini"></span></div>`);
+    row.id = "practice-row-" + i;
+    const controls = el("div","controls");
+    const rep = button("btn-record","🎤 Repetir", () => practiceWord(i, row, rep));
+    rep.id = "btn-rep-" + i; rep.disabled = !SR;
+    controls.append(button("btn-listen","🔊 Escuchar", () => speakText(d.word, 0.75)), button("btn-listen","💬 En la oración", () => speakText(d.sentence, 0.75)), rep);
+    row.append(controls, el("div","details", explainHTML(d.word, d.status, d.heard)));
+    list.append(row);
+  });
+  $("resultsCard").style.display = "block";
+  $("resultsCard").scrollIntoView({ behavior:"smooth" });
+}
+
+// Una palabra sola es difícil de reconocer: se aceptan las 5 alternativas, pero la palabra debe ser exacta.
+function wordMatches(word, transcript) {
+  return evaluate(parseSentence(word), [transcript])[0].status === "ok";
+}
+function practiceWord(i, row, btn) {
+  const key = "word-" + i;
+  if (session && session.itemId === key) return stopSession(false);
+  stopSession(true);
+  const word = drillList[i].word, pill = row.querySelector(".status-pill"), heard = row.querySelector(".heard-mini");
+  const before = pill.textContent;
+  heard.textContent = "";
+  let matchedAs = null;
+  const s = startSession({
+    silenceMs: 2000, maxMs: 10000,
+    onState: state => pill.textContent = STATE_TEXT[state],
+    onText: t => {
+      heard.textContent = `Dijiste: "${t[0]}"`;
+      const hit = t.findIndex(x => wordMatches(word, x));
+      if (hit !== -1) { matchedAs = hit; s.stop(); }
+    },
+    onDone: (t, error) => {
+      btn.classList.remove("recording"); btn.innerHTML = "🎤 Repetir";
+      if (!t) { pill.textContent = row.classList.contains("mastered") ? "✓ Correcta" : before; return; }
+      if (matchedAs !== null) {
+        row.classList.add("mastered");
+        pill.textContent = "✓ Correcta";
+        heard.textContent = matchedAs === 0 ? "¡Muy bien!" : "¡Bien! Repítela una vez más para que suene más clara.";
+      } else {
+        pill.textContent = row.classList.contains("mastered") ? "✓ Correcta" : "Intenta de nuevo";
+        if (error || !t[0]) heard.textContent = error || "No se escuchó nada. Intenta otra vez.";
+      }
+    }
+  });
+  if (session !== s) return;
+  s.itemId = key;
+  btn.classList.add("recording"); btn.innerHTML = "⏹ Terminar";
+}
+
+$("submitBtn").addEventListener("click", calculateFinalResults);
+$("restartBtn").addEventListener("click", () => {
+  stopSession(true);
+  sentences.forEach(resetSentence);
+  document.querySelectorAll("#quizContainer input").forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll(".option-label").forEach(l => l.classList.remove("correct-ans","wrong-ans"));
+  document.querySelectorAll(".explain").forEach(e => e.hidden = true);
+  $("submitBtn").disabled = false;
+  $("resultsCard").style.display = "none";
+  warnedUnanswered = false;
+  window.scrollTo({ top:0, behavior:"smooth" });
+});
+if (!SR) {
+  $("browserWarning").style.display = "block";
+  $("browserWarning").innerHTML = "⚠️ Tu navegador no soporta reconocimiento de voz. Abre esta página en <strong>Google Chrome</strong> o <strong>Microsoft Edge</strong>.";
+}
+</script>
+
+</body>
+</html>
